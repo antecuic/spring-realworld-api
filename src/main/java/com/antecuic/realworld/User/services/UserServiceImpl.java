@@ -6,18 +6,22 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.antecuic.realworld.User.User;
 import com.antecuic.realworld.User.dtos.CreateUserRequestDTO;
+import com.antecuic.realworld.User.dtos.LoginCredentialsDTO;
 import com.antecuic.realworld.User.dtos.UserDTO;
 import com.antecuic.realworld.User.mappers.UserDTOMapper;
+import com.antecuic.realworld.config.JWTService;
 import com.antecuic.realworld.shared.repositories.user.UserRepository;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserDTOMapper userDTOMapper;
+    private final JWTService jwtService;
 
-    public UserServiceImpl(UserRepository userRepository, UserDTOMapper userDTOMapper) {
+    public UserServiceImpl(UserRepository userRepository, UserDTOMapper userDTOMapper, JWTService jwtService) {
         this.userRepository = userRepository;
         this.userDTOMapper = userDTOMapper;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -28,7 +32,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO registerNewUser(CreateUserRequestDTO newUser) {
-        User user = new User(newUser.user().username(), newUser.user().email(), newUser.user().password());
+        var user = User.builder()
+                .username(newUser.user().username())
+                .email(newUser.user().email())
+                .password(newUser.user().password())
+                .build();
 
         if (userRepository.findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
@@ -45,6 +53,14 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         return this.userDTOMapper.mapUserToDTO(myUser);
+    }
+
+    @Override
+    public String authenticate(LoginCredentialsDTO credentials) {
+        User user = userRepository.findByEmail(credentials.user().email())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        return jwtService.generateToken(user);
     }
 
 }

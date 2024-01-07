@@ -25,7 +25,7 @@ class UserRepositoryTest {
         // given
         String username = "username1";
         String email = "username1@email.com";
-        User user = new User(username, email, "password");
+        User user = User.builder().username(username).email(email).password("password").build();
         underTest.save(user);
         // when
         User userFoundByUsername = underTest.findByEmailOrUsername("wrongemail@mail.com", user.getUsername());
@@ -40,7 +40,7 @@ class UserRepositoryTest {
         // given
         String username = "username1";
         String email = "username1@email.com";
-        User user = new User(username, email, "password");
+        User user = User.builder().username(username).email(email).password("password").build();
         underTest.save(user);
         // when
         User userFound = underTest.findByEmailOrUsername("wrongemail@mail.com", "wrong username");
