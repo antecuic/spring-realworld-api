@@ -27,19 +27,18 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public UserDTO registerNewUser(CreateUserRequestDTO newUser) {
-        var user = User.builder()
-                .username(newUser.user().username())
+        User user = User.builder()
                 .email(newUser.user().email())
+                .username(newUser.user().username())
                 .password(newUser.user().password())
                 .build();
 
-        if (userRepository.findByEmailOrUsername(user.getEmail(), user.getUsername()) != null) {
+        if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "User with this email or username already exists.");
+                    "User with this email already exists.");
         }
 
         return this.userDTOMapper.mapUserToDTO(userRepository.save(user));
-
     }
 
     @Override
