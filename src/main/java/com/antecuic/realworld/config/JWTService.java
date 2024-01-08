@@ -6,8 +6,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.antecuic.realworld.User.CustomUserDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,7 +20,7 @@ import io.jsonwebtoken.security.Keys;
 public class JWTService {
     private static final String SECRET_KEY = "5B96B4C32E116B447EFBBA5F71E2D5B96B4C32E116B447EFBBA5F71E2D5B96B4C32E116B447EFBBA5F71E2D";
 
-    public String extractUsername(String token) {
+    public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
@@ -28,13 +29,13 @@ public class JWTService {
         return claimsResolver.apply(claims);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(CustomUserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String username = extractUsername(token);
-        return username.equals(userDetails.getUsername()) && !isTokenExpired(token);
+    public boolean isTokenValid(String token, CustomUserDetails userDetails) {
+        final String email = extractEmail(token);
+        return email.equals(userDetails.getEmail()) && !isTokenExpired(token);
     }
 
     private boolean isTokenExpired(String token) {
@@ -45,10 +46,10 @@ public class JWTService {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, CustomUserDetails userDetails) {
         return Jwts.builder()
                 .setClaims(extraClaims)
-                .setSubject(userDetails.getUsername())
+                .setSubject(userDetails.getEmail())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
