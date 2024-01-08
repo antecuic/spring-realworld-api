@@ -1,16 +1,12 @@
-package com.antecuic.realworld.User.services;
+package com.antecuic.realworld.Auth;
 
 import com.antecuic.realworld.User.dtos.CreateUserRequestDTO;
 import com.antecuic.realworld.User.dtos.LoginCredentialsDTO;
 import com.antecuic.realworld.User.dtos.UserDTO;
 
-public interface UserService {
-    public UserDTO getUserByEmailOrUsername(String email, String usermane);
-
+public interface AuthService {
     public UserDTO registerNewUser(CreateUserRequestDTO newUser);
 
     public String authenticate(LoginCredentialsDTO credetials);
-
-    public UserDTO getUserById(long userId);
 
 }

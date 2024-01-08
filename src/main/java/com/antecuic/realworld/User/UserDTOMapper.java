@@ -1,10 +1,9 @@
-package com.antecuic.realworld.User.mappers;
+package com.antecuic.realworld.User;
 
 import java.util.function.Function;
 
 import org.springframework.stereotype.Service;
 
-import com.antecuic.realworld.User.User;
 import com.antecuic.realworld.User.dtos.UserDTO;
 
 @Service
